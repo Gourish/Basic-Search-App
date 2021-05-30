@@ -3,8 +3,8 @@ package com.example.searchDocuments.controller;
 import com.example.searchDocuments.data.FileOperationsOnCloud;
 
 import com.example.searchDocuments.model.Resource;
-import com.example.searchDocuments.parser.PDFFileParser;
-import org.apache.http.protocol.HTTP;
+import com.example.searchDocuments.parser.FileParser;
+import com.example.searchDocuments.service.TextDocumentService;
 import org.apache.tika.exception.TikaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,20 +17,24 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/data")
 public class CloudStorageController {
 
      @Autowired
      private FileOperationsOnCloud fileOperationsOnCloud;
      @Autowired
-     private PDFFileParser pdfFileParser;
+     private FileParser fileParser;
+     @Autowired
+     private TextDocumentService textDocumentService;
 
      @GetMapping("/download")
      public ResponseEntity<Object> downloadFilesfromCloud() throws GeneralSecurityException, IOException, TikaException, SAXException {
           List<Resource> resources = fileOperationsOnCloud.downloadFilesfromCloud();
-          pdfFileParser.parseFile(resources);
+          Map<Resource,String> resourceStringMap = fileParser.parseFile(resources);
+          textDocumentService.createTextDocumentFromResource(resourceStringMap);
           return new ResponseEntity<>(HttpStatus.CREATED);
      }
      @GetMapping("/creatFolder")
@@ -43,5 +47,10 @@ public class CloudStorageController {
           fileOperationsOnCloud.uploadFile();
           return new ResponseEntity<>(HttpStatus.CREATED);
      }
+     @GetMapping("/deleteFile")
+     public void deleteFile() throws IOException {
+          fileOperationsOnCloud.deleteFile();
+     }
+
 
 }

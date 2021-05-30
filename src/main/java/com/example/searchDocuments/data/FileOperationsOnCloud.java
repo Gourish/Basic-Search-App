@@ -25,7 +25,10 @@ public class FileOperationsOnCloud {
 
     //function to uploadFile onto cloud storages
     public void uploadFile() throws IOException {
-        cloudStorageAccessor.uploadFile("");
+        cloudStorageAccessor.uploadFile();
+    }
+    public void deleteFile() throws IOException {
+        cloudStorageAccessor.deleteFile();
     }
 
 }

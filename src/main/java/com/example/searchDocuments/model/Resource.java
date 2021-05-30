@@ -1,9 +1,7 @@
 package com.example.searchDocuments.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.Id;
 
 import java.io.OutputStream;
 
@@ -11,7 +9,10 @@ import java.io.OutputStream;
 @NoArgsConstructor
 @Setter
 @Getter
+@EqualsAndHashCode
 public class Resource {
+    @Id
+    private String id;
     private String fileName;
     private String webLink;
     private byte[] content;

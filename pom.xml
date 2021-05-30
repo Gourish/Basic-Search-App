@@ -72,6 +72,11 @@
 			<artifactId>tika-parsers</artifactId>
 			<version>1.26</version>
 		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>7.12.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

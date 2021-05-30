@@ -10,5 +10,6 @@ public interface CloudStorageAccessor {
     public List<Resource> readFiles() throws IOException, GeneralSecurityException;
     public void createFolder() throws GeneralSecurityException, IOException;
 
-    void uploadFile(String FileId) throws IOException;
+    void uploadFile() throws IOException;
+    public void deleteFile() throws IOException;
 }
