@@ -34,4 +34,4 @@ build/
 
 
 ./tokens
-./src/main/resources/static/keys/
+./src/main/resources/static/
