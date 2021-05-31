@@ -2,6 +2,7 @@ package com.example.searchDocuments.parser;
 
 
 
+import com.example.searchDocuments.exception.DocumentParseException;
 import com.example.searchDocuments.model.Resource;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
@@ -22,16 +23,19 @@ import java.util.Map;
 @Component
 public class FileParser {
     //function parses pdf files to give output in string format
-    public Map<Resource,String> parseFile(List<Resource> resources) throws TikaException, IOException, SAXException {
+    public Map<Resource,String> parseFile(List<Resource> resources) throws DocumentParseException {
         Map<Resource,String> parsedContent = new HashMap<>();
         Parser parser = new AutoDetectParser();
-        //FileInputStream inputstream = new FileInputStream(new File("/home/gourish/sample.pdf")) ;
         for(Resource resource : resources) {
             BodyContentHandler handler = new BodyContentHandler(-1);
             Metadata metadata = new Metadata();
             ParseContext pcontext = new ParseContext();
             ByteArrayInputStream inputstream = new ByteArrayInputStream(resource.getContent());
-            parser.parse(inputstream, handler, metadata, pcontext);
+            try {
+                parser.parse(inputstream, handler, metadata, pcontext);
+            } catch (TikaException | SAXException | IOException e) {
+                throw new DocumentParseException(e);
+            }
             parsedContent.put(resource,handler.toString());
         }
             return parsedContent;

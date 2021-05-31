@@ -2,6 +2,8 @@ package com.example.searchDocuments.controller;
 
 import com.example.searchDocuments.data.FileOperationsOnCloud;
 
+import com.example.searchDocuments.exception.CloudAccessException;
+import com.example.searchDocuments.exception.DocumentParseException;
 import com.example.searchDocuments.model.Resource;
 import com.example.searchDocuments.parser.FileParser;
 import com.example.searchDocuments.service.TextDocumentService;
@@ -31,14 +33,14 @@ public class CloudStorageController {
      private TextDocumentService textDocumentService;
 
      @GetMapping("/download")
-     public ResponseEntity<Object> downloadFilesfromCloud() throws GeneralSecurityException, IOException, TikaException, SAXException {
+     public ResponseEntity<Object> downloadFilesfromCloud() throws CloudAccessException, DocumentParseException {
           List<Resource> resources = fileOperationsOnCloud.downloadFilesfromCloud();
           Map<Resource,String> resourceStringMap = fileParser.parseFile(resources);
           textDocumentService.createTextDocumentFromResource(resourceStringMap);
-          return new ResponseEntity<>(HttpStatus.CREATED);
+          return new ResponseEntity<>(HttpStatus.OK);
      }
      @GetMapping("/creatFolder")
-     public ResponseEntity<Object> createFoldersOnCloud() throws GeneralSecurityException, IOException {
+     public ResponseEntity<Object> createFoldersOnCloud() throws  CloudAccessException {
           fileOperationsOnCloud.createFilesOnCloud();
           return new ResponseEntity<>(HttpStatus.CREATED);
      }
@@ -48,8 +50,9 @@ public class CloudStorageController {
           return new ResponseEntity<>(HttpStatus.CREATED);
      }
      @GetMapping("/deleteFile")
-     public void deleteFile() throws IOException {
+     public ResponseEntity<Object> deleteFile() throws IOException {
           fileOperationsOnCloud.deleteFile();
+          return new ResponseEntity<>(HttpStatus.NO_CONTENT);
      }
 
 

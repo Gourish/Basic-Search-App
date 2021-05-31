@@ -39,7 +39,7 @@ public class GoogleDriveAccessor implements CloudStorageAccessor {
     }
 
     // this function reads files that are listed in my drive folder of google drive
-    public List<Resource> readFiles() throws GeneralSecurityException, IOException {
+    public List<Resource> readFiles() throws  IOException {
         List<Resource> resources = new ArrayList<>();
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                 .setApplicationName(APPLICATION_NAME)
@@ -83,17 +83,22 @@ public class GoogleDriveAccessor implements CloudStorageAccessor {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
     //function creates folder on Google Drive
-    public void createFolder() throws GeneralSecurityException, IOException {
+    public void createFolder() throws IOException  {
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
+                    .setApplicationName(APPLICATION_NAME)
+                    .build();
+
         File fileMetadata = new File();
         fileMetadata.setName("Text Documents");
         fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        try {
+            File file = drive.files().create(fileMetadata)
+                    .setFields("id")
+                    .execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        File file = drive.files().create(fileMetadata)
-                .setFields("id")
-                .execute();
     }
 
     //function uploads the file in the specified folder . folder id is taken as parameter to identify the folder.
