@@ -1,5 +1,6 @@
 package com.example.searchDocuments.service;
 
+import com.example.searchDocuments.exception.DocumentIndexDeleteException;
 import com.example.searchDocuments.model.Resource;
 import com.example.searchDocuments.model.ResponseForSearch;
 import com.example.searchDocuments.model.TextDocument;
@@ -8,11 +9,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,17 +35,23 @@ public class TextDocumentService {
         textDocumentRepository.saveAll(textDocuments);
 
     }
-    public List<ResponseForSearch> findDocuments(String keyWord)
-    {
-        List<TextDocument> results = textDocumentRepository.findByContentContaining(keyWord);
-        List<ResponseForSearch> responseForSearch = results.stream().map(result-> new ResponseForSearch(result.getFileName(),result.getWebURL())).collect(Collectors.toList());
-
-        return responseForSearch;
+    public List<ResponseForSearch> findDocuments(String keyWord) {
+            if(keyWord.contains(" "))
+            {
+                throw new InvalidDataAccessApiUsageException("search query should contain single word");
+            }
+           List<TextDocument> results = textDocumentRepository.findByContentContaining(keyWord);
+            List<ResponseForSearch> responseForSearch = results.stream().map(result-> new ResponseForSearch(result.getFileName(),result.getWebURL())).collect(Collectors.toList());
+            return responseForSearch;
     }
 
-    public void removeAllDocuments()
-    {
-        textDocumentRepository.deleteAll();
+    public void removeAllDocuments() throws DocumentIndexDeleteException {
+        try {
+            textDocumentRepository.deleteAll();
+        } catch (Exception e) {
+            throw new DocumentIndexDeleteException(e);
+        }
+
     }
 
     public void createTextDocumentFromResource(Map<Resource,String>resourceStringMap)

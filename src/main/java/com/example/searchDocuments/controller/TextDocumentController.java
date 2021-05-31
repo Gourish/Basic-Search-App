@@ -1,11 +1,13 @@
 package com.example.searchDocuments.controller;
 
+import com.example.searchDocuments.exception.DocumentIndexDeleteException;
 import com.example.searchDocuments.model.ResponseForSearch;
 import com.example.searchDocuments.service.TextDocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -16,25 +18,15 @@ public class TextDocumentController {
 private TextDocumentService textDocumentService;
 
 @GetMapping("/search/{keyWord}")
-public List<ResponseForSearch> getDocuments(@PathVariable String keyWord){
+public ResponseEntity<List<ResponseForSearch>> searchDocuments(@PathVariable String keyWord)  {
     List<ResponseForSearch> searchResults = textDocumentService.findDocuments(keyWord);
-    return searchResults;
+    return new ResponseEntity<>(searchResults,HttpStatus.OK);
 }
-//@GetMapping("/addFile")
-//public void addDocument()
-//{
-//
-//    //textDocumentService.addTextDocument(textDocument);
-//}
-//@GetMapping("/search")
-//public void findDocuments()
-// {
-//    List<String> webLinks = textDocumentService.findDocuments("your");
-// }
+
 
  @GetMapping("/deleteAll")
- public void removeAllDocuments()
- {
+ public ResponseEntity<Object> removeAllDocuments() throws DocumentIndexDeleteException {
      textDocumentService.removeAllDocuments();
+     return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
  }
 }
